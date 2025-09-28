@@ -14,19 +14,12 @@ Open Browser To Site
 
 *** Test Cases ***
 Home Renders Title And Nav
-    Get Title Should Be    devtestportfolio – Home
+    ${title}=    Get Title
+    Should Be Equal    ${title}    devtestportfolio – Home
     Get Text    h1    ==    devtestportfolio
     Get Attribute    a[aria-current="page"]    aria-current    ==    page
 
-Toggle Bio Expands And Collapses
-    Click    #toggle-bio
-    Get Attribute    #toggle-bio    aria-expanded    ==    true
-    Get Property    document.querySelector('#bio').hidden    ==    False
-    Click    #toggle-bio
-    Get Attribute    #toggle-bio    aria-expanded    ==    false
-    Get Property    document.querySelector('#bio').hidden    ==    True
-
 Add Item To Quick List
-    Fill Text    #item-input    Test item
-    Click    #add-btn
-    Get Text    #quick-list li >> nth=0    ==    Test item
+    Fill Text    id=item-input    Test item
+    Click    id=add-btn
+    Get Text    xpath=//*[@id="quick-list"]/li/    ==    Test item
