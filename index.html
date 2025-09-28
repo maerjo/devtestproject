@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>devtestportfolio – Home</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header role="banner">
+    <h1>devtestportfolio</h1>
+    <nav aria-label="Main" role="navigation">
+      <a href="/index.html" aria-current="page">Home</a>
+      <a href="/projects.html">Projects</a>
+      <a href="mailto:maerjo@example.com" id="contact-link">Contact</a>
+    </nav>
+  </header>
+
+  <main role="main">
+    <section aria-labelledby="about-heading">
+      <h2 id="about-heading">About</h2>
+      <p>Hi, I’m a test automation specialist. This site collects my projects, notes, and experiments.</p>
+      <button id="toggle-bio" aria-expanded="false" aria-controls="bio">Toggle more</button>
+      <div id="bio" hidden>
+        <p>I enjoy building CI/CD pipelines, Robot Framework suites, and clean frontends. CrossFit and coffee fuel the rest ☕.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="quicklist-heading">
+      <h2 id="quicklist-heading">Quick links</h2>
+      <form id="add-form" aria-label="Add quick link">
+        <input id="item-input" name="item" placeholder="Add an item…" aria-label="Item text" />
+        <button id="add-btn" type="submit">Add</button>
+      </form>
+      <ul id="quick-list" aria-live="polite"></ul>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <small>© <span id="year"></span> devtestportfolio</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

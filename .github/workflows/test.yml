@@ -1,0 +1,39 @@
+name: CI – Robot tests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  robot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+      - name: Install deps
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements.txt
+          rfbrowser init
+      - name: Start static server
+        run: |
+          python -m http.server 8000 &
+          echo $! > server.pid
+      - name: Run Robot
+        run: robot -d reports tests
+      - name: Upload Robot reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-reports
+          path: reports
+      - name: Stop server
+        if: always()
+        run: kill $(cat server.pid) || true

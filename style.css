@@ -1,0 +1,13 @@
+:root { --space: 1rem; --max: 900px; }
+* { box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; line-height: 1.5; margin: 0; color: #111; }
+header, main, footer { padding: var(--space); }
+header { border-bottom: 1px solid #e5e7eb; }
+nav a { margin-right: .75rem; text-decoration: none; }
+nav a[aria-current="page"] { font-weight: 600; text-decoration: underline; }
+main { max-width: var(--max); margin: 0 auto; }
+button { cursor: pointer; }
+form { display: flex; gap: .5rem; margin-block: .5rem; }
+input { padding: .5rem; flex: 1; }
+ul { padding-left: 1.2rem; }
+footer { border-top: 1px solid #e5e7eb; }
