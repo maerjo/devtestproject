@@ -2,7 +2,7 @@
 
 A site about testing and other dev projects and a little about me.
 
-**Live site:** <https://maerjo.github.io/devtestportfolio/>
+**Live site:** <https://maerjo.github.io/devtestproject/>
 
 ## Quick start
 
