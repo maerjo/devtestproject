@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Partikompass 2026 – Riksdagspartiernas ståndpunkter</title>
+  <meta name="description" content="Jämför alla riksdagspartiers ståndpunkter inför valet 2026 inom 10 sakpolitiska teman." />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0f0f13; }
+    button { cursor: pointer; }
+  </style>
+</head>
+<body>
+      <div style="background:#16161f; border-bottom:1px solid #2a2a35; padding:10px 24px;">
+      <a href="/devtestproject/index.html" style="color:#9b8cff; font-family:sans-serif; font-size:13px; text-decoration:none;">← Tillbaka till devtestportfolio</a>
+    </div>
+<div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+
+const parties = [
+  { id: "s", name: "Socialdemokraterna", abbr: "S", color: "#E8002D", textColor: "#fff", bloc: "Opposition" },
+  { id: "m", name: "Moderaterna", abbr: "M", color: "#1B3A6B", textColor: "#fff", bloc: "Regering" },
+  { id: "sd", name: "Sverigedemokraterna", abbr: "SD", color: "#DDCF00", textColor: "#1a1a1a", bloc: "Stödparti" },
+  { id: "c", name: "Centerpartiet", abbr: "C", color: "#009933", textColor: "#fff", bloc: "Opposition" },
+  { id: "v", name: "Vänsterpartiet", abbr: "V", color: "#C2001A", textColor: "#fff", bloc: "Opposition" },
+  { id: "kd", name: "Kristdemokraterna", abbr: "KD", color: "#004B87", textColor: "#fff", bloc: "Regering" },
+  { id: "l", name: "Liberalerna", abbr: "L", color: "#006AB3", textColor: "#fff", bloc: "Regering" },
+  { id: "mp", name: "Miljöpartiet", abbr: "MP", color: "#53A045", textColor: "#fff", bloc: "Opposition" },
+];
+
+const topicGroups = [
+  {
+    label: "Ekonomi & samhälle",
+    topics: [
+      { id: "nuclear", label: "☢️ Kärnkraft", short: "Kärnkraft" },
+      { id: "climate", label: "🌿 Klimat", short: "Klimat" },
+      { id: "migration", label: "🌍 Migration", short: "Migration" },
+      { id: "business", label: "💼 Näringsliv & skatter", short: "Näringsliv" },
+      { id: "urban", label: "🏙️ Stadsbor", short: "Stadsbor" },
+    ]
+  },
+  {
+    label: "Säkerhet & teknik",
+    topics: [
+      { id: "crime", label: "⚖️ Brott & straff", short: "Brott & straff" },
+      { id: "defense", label: "🛡️ Försvarspolitik", short: "Försvar" },
+      { id: "it", label: "💻 IT & AI", short: "IT & AI" },
+      { id: "intel", label: "🔍 Underrättelsetjänst", short: "Underrättelse" },
+      { id: "defind", label: "🏭 Statlig roll i försvarsindustrin", short: "Försvarsindustri" },
+    ]
+  }
+];
+
+const allTopics = topicGroups.flatMap(g => g.topics);
+
+const ratings = {
+  s:   { nuclear: 3, climate: 4, migration: 3, business: 3, urban: 4, crime: 3, defense: 4, it: 3, intel: 3, defind: 4 },
+  m:   { nuclear: 5, climate: 3, migration: 2, business: 5, urban: 3, crime: 5, defense: 5, it: 4, intel: 5, defind: 2 },
+  sd:  { nuclear: 5, climate: 1, migration: 1, business: 3, urban: 2, crime: 5, defense: 4, it: 3, intel: 4, defind: 3 },
+  c:   { nuclear: 3, climate: 5, migration: 4, business: 5, urban: 4, crime: 3, defense: 4, it: 5, intel: 3, defind: 2 },
+  v:   { nuclear: 1, climate: 5, migration: 5, business: 1, urban: 3, crime: 2, defense: 2, it: 3, intel: 2, defind: 3 },
+  kd:  { nuclear: 5, climate: 3, migration: 2, business: 4, urban: 3, crime: 4, defense: 5, it: 3, intel: 4, defind: 2 },
+  l:   { nuclear: 4, climate: 3, migration: 3, business: 4, urban: 4, crime: 4, defense: 5, it: 4, intel: 4, defind: 2 },
+  mp:  { nuclear: 1, climate: 5, migration: 5, business: 2, urban: 3, crime: 2, defense: 2, it: 3, intel: 2, defind: 3 },
+};
+
+const ratingLabels = {
+  nuclear:  ["Starkt emot", "Skeptisk", "Neutralt/Delat", "Positivt", "Starkt för"],
+  climate:  ["Låg prioritet", "Viss hänsyn", "Medelambition", "Hög ambition", "Högsta prioritet"],
+  migration:["Mycket restriktiv", "Restriktiv", "Måttlig", "Liberal", "Mycket liberal"],
+  business: ["Statsstyrd", "Vänsterleaning", "Balanserad", "Marknadsleaning", "Starkt marknadsliberal"],
+  urban:    ["Landsbygdsfokus", "Litet storstadsfokus", "Blandat", "Storstadsvänligt", "Starkt storstadsfokus"],
+  crime:    ["Förebyggande fokus", "Balanserat/mjukt", "Balanserat", "Hårdare straff", "Maximalt repressivt"],
+  defense:  ["Nedrustning/pacifism", "Skeptisk/måttlig", "Måttlig satsning", "Stark satsning", "Maximal upprustning"],
+  it:       ["Låg prioritet", "Försiktig", "Måttlig satsning", "Aktiv satsning", "Ledande prioritet"],
+  intel:    ["Stark kritik/begränsning", "Integritetsfokus", "Balanserat", "Stöd för stärkning", "Maximal stärkning"],
+  defind:   ["Privatisering/avstånd", "Marknadsmodell", "Statliga kontrakt/stöd", "Minoritetsägarskap", "Förstatligande"],
+};
+
+const ratingColors = ["#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e"];
+
+const positions = {
+  s: {
+    nuclear: "Accepterar befintlig kärnkraft och ser positivt på livstidsförlängningar. Öppna för ny kärnkraft men kritiska till statliga direktinvesteringar — vill att marknaden ska driva det. Föredrar att satsa på förnybart som kan komma igång snabbare.",
+    climate: "Vill att Sverige ska bli världens första fossilfria välfärdsnation. Mål om netto-nollutsläpp 2045. Vill ha ytterligare 60 TWh fossilfri kraft till 2030. Kombinerar statliga investeringar med marknadslösningar.",
+    migration: "Håller en 'stram' migrationslinje sedan 2022 — skarp förändring mot tidigare. Prioriterar integration och egensörjning. Kritiserade internt av en del partimedlemmar för att stå för nära SD:s linje.",
+    business: "Stark offentlig sektor med hög välfärd. Vill ha aktiv arbetsmarknadspolitik, kollektivavtal och höjda löner. Mer skeptiska till avreglering och privatiseringar än de borgerliga. Höjer hellre utgifter än sänker skatter.",
+    urban: "Satsar på välfärd, vård och skola. Vill ha starka kollektivavtal och god arbetsrätt — viktigt för stadsarbetare. Satsar på bostadsbyggande och kollektivtrafik i storstäder. Stöder kulturliv och offentliga mötesplatser.",
+    crime: "Stöder skärpta straff men betonar starkt förebyggande arbete parallellt. Vill ha fler poliser men också sociala insatser mot gängrekrytering. Kritiserar regeringens ensidiga fokus på inlåsning och menar att återfallsrisken måste minska via bättre kriminalvård och utslussning.",
+    defense: "Stark omsvängning — under S-regeringen höjdes försvarsanslagen kraftigt och man drev på för Nato-ansökan 2022. Stödjer Ukraina men kritiseras för att ha legat lågt historiskt. Vill ha förstärkt ubåtsvapen, luftvärn och nordiskt försvarssamarbete. Har reservationer mot kärnvapen på svenskt territorium.",
+    it: "Lyfter greentech, försvarsteknologi och AI som framtidssatsningar. Vill investera i digital infrastruktur, 5G och 6G. Kritiseras dock för att inte ha förnyat sin AI-politik sedan 2023 — programmet på hemsidan är oförändrat och ses som otillräckligt inför valet.",
+    intel: "Stödjer välreglerad underrättelseverksamhet med tydliga kontrollmekanismer. Historiskt mer skeptiska till FRA-lagens räckvidd av integritetsskäl. Stöder den nya civila utrikes underrättelsetjänsten (UND, start 2027) men vill ha stark parlamentarisk tillsyn och tydliga begränsningar.",
+    defind: "Socialdemokraterna har tydligt skiftat linje — Peter Hultqvist sa i riksdagen att partiet 'har släppt sin tidigare ståndpunkt och nu gärna ser ett större statligt intresse i våra företag.' De förespråkar statligt minoritetsägarskap eller riskkapitalinsatser i strategisk försvarsindustri, motiverat av försörjningssäkerhet och nationell kontroll. Det är inte förstatligande — snarare en fransk modell där staten är en av flera ägare.",
+  },
+  m: {
+    nuclear: "En av de starkaste förespråkarna. Driver regeringens satsning med statlig direktinvestering (36 mdr) och garantier för kärnavfallshantering (183 mdr). Vill att Sverige ska ha 100% fossilfri elproduktion 2040, med kärnkraft som grundpelare.",
+    climate: "Accepterar klimatmål men prioriterar kärnkraft och marknadsmekanismer framför klimatreglering och styrmedel. Sänkte klimatpolitiska ambitioner som ledde till att Sverige missade EU-mål. Teknikoptimism utan koldioxidskatt.",
+    migration: "Klart restriktiv — driver hårdare asylregler, snabbare utvisningar och begränsad anhöriginvandring. Ser invandring primärt som ett integrationsproblem att hantera, inte en tillgång. Nära SD:s linje i praktiken.",
+    business: "Kärnfrågan. Lägre skatter, enklare regler för företag, sänkt bolagsskatt, avskaffad värnskatt. Stödjer privatisering och marknadskonkurrens inom vård och skola. Sveriges tydligaste marknadsliberala parti.",
+    urban: "Valfrihet och konkurrens i välfärden — friskolereformen är ett M-arv. Bra för storstadsbor som vill välja skola och vårdgivare. Sämre för dem som är beroende av offentliga tjänster med låga inkomster.",
+    crime: "Driver det hårdaste kriminalpolitiska skiftet i modern tid. Vill avskaffa mängdrabatt och ungdomsrabatt. Kriminalvården expanderar från 9 000 till 17 000 platser till 2034 (budget från 14 mdr 2023 till 31,5 mdr 2028). Automatisk utvisning av utländska medborgare som döms för brott. Brottsoffret i centrum.",
+    defense: "Extremt starkt försvarsfokus. Höjde försvarsanslaget med 100 miljarder under mandatperioden, till 175 mdr 2026 (2,8% av BNP). Vill nå Natos 3,5%-mål till 2030. Stödjer kärnvapenavskräckning inom Nato. Stöd till Ukraina är partiets utrikespolitiska prioritet nr 1 — ca 100 mdr kr under mandatperioden.",
+    it: "Ser AI som tydlig möjliggörare. Driver AI-verkstad, AI-fabrik (vid LiU) och AI-sandlåda för 479 miljoner 2026. Betonar cybersäkerhet och digital beredskap för kritisk infrastruktur. Kritiseras dock för att AI saknas i partiprogrammet — politiken är mer deskriptiv än konkret.",
+    intel: "Starkt stöd för stärkt underrättelseverksamhet. Driver den nya civila utrikes underrättelsetjänsten UND (start 2027, baserad på Carl Bildts utredning). Vill ha effektivare samarbete mellan Must, FRA, Säpo och UND. Stöder ny signalspaningslag som träder i kraft 2026.",
+    defind: "Klart emot statligt ägarinflytande i försvarsindustrin. Regeringens försvarsindustristrategi (juni 2025) satsar på statliga kontrakt, långsiktiga beställningar, exportstöd och förbättrad kapitaltillgång — inte ägande. M ser privatägd industri som effektivare och varnar för att stat-och-ägare-rollen skapar intressekonflikter och minskar transparensen. Saab ska förbli privat.",
+  },
+  sd: {
+    nuclear: "Starkt pro-kärnkraft. Vill se snabb utbyggnad av ny kärnkraft och SMR. Betraktar kärnkraft som en nationell angelägenhet och är öppna för statlig inblandning för att säkra energiförsörjningen.",
+    climate: "Klimatskeptiska — ifrågasätter klimatpolitikens ambitionsnivå och vill prioritera ekonomi och konkurrenskraft. Emot koldioxidskatter och internationella klimatavtal som de anser skada Sverige. Vill avveckla bonus-malus.",
+    migration: "Det mest restriktiva riksdagspartiet. Vill ha kraftigt minskad invandring, skärpta krav för uppehållstillstånd och aktivt arbeta för återvandring. Har styrt agendan i migrationsfrågor sedan 2022.",
+    business: "Nationell ekonomi — vill skydda svenska jobb men mer ambivalenta till frihandel. Stöder lägre bensinskatt och kostnadsminskningar för hushåll. Inte renodlat marknadsliberala — vill ha statliga ingripanden för 'svenska intressen'.",
+    urban: "Fokuserar på lag och ordning i städerna — gängkriminalitet och trygghet. Satsar på polis och hårdare straff. Begränsar kulturliv som upplevs som kosmopolitiskt. Sämre för storstadsbor med globalt/liberalt perspektiv.",
+    crime: "Det mest repressiva partiet på kriminalpolitiken. Vill ha extremt långa fängelsestraff och förvaring på obestämd tid för gängkriminella. Vill kartlägga gängaktiva via spaning och kameraövervakning, beslagta tillgångar och omhänderta barn i kriminella miljöer. Kopplar tydligt ihop brottslighet och migration.",
+    defense: "Pragmatiskt Nato-stöd — var länge motståndare men svängde 2022. Stödjer ökade försvarsanslag och deltar i finansieringsmodellen för att nå Natos mål. Mer nationalistisk syn — vill prioritera det egna territoriet snarare än internationella åtaganden. Samarbetar med regeringen kring 96 mkr-paketet mot hybridhot.",
+    it: "Stöder ambitiös nationell AI-plan och anser Sverige inte bör vänta på EU:s AI-akt. Samarbetar med regeringen kring AI-satsningen 479 mnkr i budgeten 2026. Vill ha AI i skolan och cybersäkerhet i utbildningen. Betonar teknikneutralitet och att AI-etik måste balanseras mot konkurrenskraft.",
+    intel: "Stödjer stärkta underrättelsetjänster och ökad signalspaning. Ser underrättelseverksamhet som viktigt verktyg mot terrorism och organiserad brottslighet. Deltar i finansieringsöverenskommelse med regeringen om hybridhot. Relativt ointresserade av integritetsfrågan i jämförelse med oppositionspartierna.",
+    defind: "Ambivalenta. SD är inte renodlat marknadsliberala och har inget principiellt motstånd mot statlig inblandning i 'nationellt strategiska' branscher. De stödjer i praktiken regeringens marknadsmodell men skulle kunna tänka sig statlig kontroll om det handlar om att hålla utländskt — särskilt kinesiskt eller ryskt — kapital borta från svensk försvarsindustri. Nationell rådighet väger tyngre än ägarformen i sig.",
+  },
+  c: {
+    nuclear: "Accepterar befintlig kärnkraft men absolut emot statliga subventioner och direktägande. Vill att marknaden ska bära risken. Föredrar förnybart och hoppas på fusionskraft långsiktigt. Reserverade sig mot regeringens kärnkraftsbeslut.",
+    climate: "Det borgerliga partiet med starkast klimatprofil. Vill ha ambitiösa klimatmål och koldioxidskatt. Säger sig vilja stoppa varje regering som sänker Sveriges klimatambitioner. Teknikoptimistiska — tror på marknadsdriven omställning.",
+    migration: "Det mest öppna av de borgerliga partierna. Värnar asylrätten, vill ha öppen arbetskraftsinvandring, stödjer familjeåterförening. Delar mer med MP och V i migrationsfrågan än med M, KD och SD.",
+    business: "Starkt pro-företagande — lägre skatter, enklare regler, stöd för egenföretagare och start-ups. Kombinerar marknadsliberalism med grönt fokus. Vill ha fri konkurrens utan statliga monopol.",
+    urban: "Aktivt satsar på storstäder. Vill ha livlig kulturscen, friare nattliv, valfrihet i skola och vård. Öppen migrationssyn attraherar kosmopolitiska stadsbor. Väljarbasen är nu utpräglat storstadsbaserad.",
+    crime: "Tydligt kritiska mot regeringens ensidiga fokus på fängelsestraff. Riksdagsledamoten sa direkt: 'SD:s mål är att fler ska sitta i fängelse — C:s mål är att färre ska begå brott.' Vill ha skärpta straff för grova brott MEN lika starka satsningar på förebyggande arbete och återfallsreduktion. Reserverade sig mot dubbla straff-propositionen.",
+    defense: "Starkt Nato-entusiaster — drev aktivt på för medlemskap. Stödjer ökade försvarsanslag och nordiskt försvarssamarbete. Betonar civilt försvar parallellt med militärt. Reserverade sig mot delar av försvarsbeslutet för att civilt försvar inte prioriterades tillräckligt.",
+    it: "Det mest proaktiva partiet på digitalisering och AI. Riksdagsledamot Niels Paarup-Petersen är riksdagens tydligaste AI-röst. Vill ha AI i skolan istället för förbud, stärkt digital suveränitet för Sverige och EU, fiber som eget transportslag och 5G-stöd för landsbygden. Drev kravet på AI-kommissionen.",
+    intel: "Balanserad syn — stödjer välreglerad underrättelsetjänst men betonar rättssäkerhet och integritetsskydd. Reserverade sig mot delar av FRA-lagens räckvidd. Stödjer UND-förslaget men vill ha stark parlamentarisk kontroll och tydliga begränsningar mot inhemsk övervakning.",
+    defind: "Emot statligt ägarinflytande i försvarsindustrin — konsekvent med sin marknadsliberala linje. C är kritiska mot statliga direktinvesteringar generellt (se kärnkraft) och ser inget skäl att göra undantag för försvarsindustrin. Vill hellre se starka statliga kontrakt, långsiktiga beställningar och exportstöd som styrmedel. Reserverade sig mot delar av försvarsindustristrategin men av procedurmässiga snarare än principiella skäl.",
+  },
+  v: {
+    nuclear: "Starkt emot kärnkraft — vill stänga ner befintliga reaktorer och avvisa all ny kärnkraft. Röstade mot regeringens kärnkraftssatsning. Ser kärnkraft som dyr, farlig och onödig när förnybart kan täcka behovet.",
+    climate: "Mest ambitiösa klimatpartiet näst efter MP. Vill ha kraftiga statliga investeringar i grön omställning, förlänga klimatklivet till 2035, sju miljarder per år. Kombination av offentlig styrning och hårda utsläppsmål.",
+    migration: "Det mest öppna partiet. Vill ha humanare asylpolitik, stärkt barnkonvention, humanitär ventil i utlänningslagen och att facket — inte arbetsgivaren — ska granska arbetskraftsinvandring. Starkt emot nuvarande restriktioner.",
+    business: "Tydligt vänsterparti på ekonomin. Vill höja skatterna för höginkomsttagare och kapital, stärka fackliga rättigheter, begränsa vinstuttag i välfärden och öka offentliga investeringar. Skeptiska till avregleringar.",
+    urban: "Bra för löntagare med låga och medelhöga inkomster i städer. Satsar på kollektivtrafik, hyresrätt och offentlig sektor. Sämre för egenföretagare och de som tjänar bra och vill ha lägre skatt.",
+    crime: "Tydligt fokus på förebyggande och rehabilitering. Starkt emot regeringens massiva straffskärpningar — anser att forskningen inte stödjer att hårdare straff minskar brottsligheten. Vill ha sociala insatser, bättre utslussning och bekämpa bakomliggande orsaker som fattigdom och utanförskap. Reserverade sig mot dubbla straff-propositionen.",
+    defense: "Accepterar Nato-medlemskapet men verkar inte aktivt för det och kräver kärnvapenfritt Sverige i lag. Vill se diplomati och dialog som första försvarslinjen. Skeptiska till höga försvarsanslag på bekostnad av välfärd. Betonar värnplikt och folkförankrat totalförsvar snarare än teknisk-professionell militär.",
+    it: "Stödjer digitalisering men betonar etik, integritet och maktkoncentration kring techgiganterna. Vill reglera AI för att förhindra diskriminering och skydda arbetstagare. Ser AI som möjlighet i välfärden men kräver demokratisk kontroll och starka integritetsskydd.",
+    intel: "Starkt kritiska mot utvidgad signalspaning och massövervakning. Historiskt emot FRA-lagen. Betonar integritetsskydd och rättssäkerhet. Skeptiska mot underrättelsetjänsters ökade befogenheter och vill ha strikta begränsningar mot inhemsk avlyssning.",
+    defind: "Paradoxalt nog är V — det mest förstatligandevänliga partiet generellt — inte de som driver statligt ägande av försvarsindustrin starkast. De är historiskt skeptiska till vapenexportens logik och vill begränsa export till diktaturer och krigförande stater. V förespråkar statlig kontroll över samhällsbärande infrastruktur, men ser försvarsindustrins exportdrivna affärsmodell som ett problem snarare än en tillgång. Reservation lämnades om ägandeformer och rådighet i försvarsutskottets betänkande.",
+  },
+  kd: {
+    nuclear: "Starkt pro-kärnkraft — en av drivkrafterna bakom regeringens kärnkraftssatsning. Energiminister Ebba Busch har lett arbetet med ny kärnkraft och statliga investeringar. Ser kärnkraft som nödvändigt för energitrygghet.",
+    climate: "Accepterar klimatmål men kärnkraft väger tyngre. Stöder statlig kärnkraftssatsning trots höga kostnader. Familjefokus innebär ibland konservativa val — men partiet stödjer klimatomställning som en del av hushållens ekonomi.",
+    migration: "Klart restriktiv. Drev tidiga idéer om begränsad anhöriginvandring. Stödjer Tidöavtalets restriktiva migrationslinje.",
+    business: "Pro-marknaden men med familjefokus. Vill ha lägre skatt för familjer, RUT och ROT-avdrag. Stödjer privata alternativ i vård och skola. Inte lika renodlat marknadsliberala som M.",
+    urban: "Familjepolitiken gynnar barnfamiljer oavsett var de bor. RUT-avdrag uppskattat av hushåll i städer. Konservativa värderingsfrågor kan vara ett hinder för progressiva stadsbor.",
+    crime: "Betonar familjens och normernas roll i att förebygga brott — unikt bland partierna. Stödjer skärpta straff och utbyggd kriminalvård, men lyfter föräldrastödsprogram och stärkt socialtjänst parallellt. Ser gängkriminalitetens rötter delvis i bristande familjesammanhållning och integration.",
+    defense: "Extremt starkt försvarsfokus — hoppade av försvarssamtalen för att kraven inte var höga nog. Starkt Nato-entusiaster. Civilminister Erik Slottner (KD) är digitaliseringsminister. Stödjer kärnvapenavskräckning inom Nato och vill nå Natos mål snabbt.",
+    it: "Innehar posten som digitaliseringsminister men kritiseras för att sakna tydlig AI-politik i partiprogrammet. Betonar AI som verktyg för bättre välfärd och e-hälsa. Vill prioritera bredbandsutbyggnad i hela landet och minska beroendet av globala techgiganterna genom europeiska lösningar.",
+    intel: "Stödjer stärkt underrättelseverksamhet och UND-förslaget. Ser säkerhetstjänsterna som centrala för totalförsvaret. Betonar samordning mellan Säpo, Must, FRA och den nya UND. Stödjer ny signalspaningslag som träder i kraft 2026.",
+    defind: "Stödjer regeringens linje med marknadsmodellen — starka statliga kontrakt, långsiktiga beställningar och exportstöd, men inte ägarinflytande. KD ser försvarsindustrin som en säkerhetspolitisk tillgång och vill ge den goda villkor utan att staten blir ägare. Värnar äganderätten principiellt men ser statliga investeringar i produktionskapacitet som acceptabelt när det motiveras av totalförsvarets behov.",
+  },
+  l: {
+    nuclear: "Pro-kärnkraft — stödjer regeringens linje med ny kärnkraft. Ser det som nödvändigt för klimatomställning och energitrygghet. Inte lika drivande som M och KD men stödjer aktiva statliga åtgärder.",
+    climate: "Accepterar klimatmål och ser kärnkraft som klimatlösning. Evidensbaserad approach — stödjer det som forskningen säger fungerar. Blandar marknadslösningar med styrmedel.",
+    migration: "Historiskt öppet parti men har mildrat linjen. Betonar integration och utbildning framför restriktioner. Vill ha ordning men med rättsstatsprinciper i fokus. Mer nyanserat än M, KD och SD.",
+    business: "Liberala på ekonomin — lägre skatter, valfrihet, konkurrens. Starkt pro-utbildning som drivkraft för tillväxt. Vill underlätta för företag och egenföretagare. Starkt stöd för frihandel och EU.",
+    urban: "Skola och utbildning i fokus — goda nyheter för storstadsföräldrar. Valfrihet i välfärden. Öppet samhälle och kulturliv passar liberal storstadbor. Starkt EU-positiva — tilltalar kosmopolitiska väljare.",
+    crime: "Balanserad linje — stödjer skärpta straff men betonar rättssäkerhet, evidensbaserad politik och vikten av utslussning. Vill att fotboja och alternativa påföljder finns kvar. Kritiserar fängelseöverbeläggning. Stödjer paradigmskiftet i kriminalpolitiken i stort men inte dess mest extrema delar.",
+    defense: "Länge den mest Nato-entusiastiska rösten — drev på för medlemskap i över 20 år. Vill se starka försvarsanslag och robust cybersäkerhet. Starkt stöd för Ukraina. Betonar internationella samarbeten och EU:s säkerhetsdimension. Stödjer UND och stärkt underrättelsekapacitet.",
+    it: "Tydlig AI-satsning — vill ha teknikoptimistisk AI-strategi och separat AI-säkerhetsstrategi. Betonar öppna standarder mot inlåsningseffekter, etiska ramar på EU-nivå och digital infrastruktur. Lyfter AI inom vård, klimat och utbildning. Stödjer innovation men kräver ansvarsfull reglering.",
+    intel: "Stödjer välreglerad och stark underrättelseverksamhet. Ser informationsinhämtning som avgörande i det skärpta säkerhetsläget. Stödjer UND och ny signalspaningslag. Historiskt tydliga med att integritet och säkerhet måste balanseras — inte offra det ena för det andra.",
+    defind: "Emot statligt ägarinflytande — konsekvent marknadsliberal linje. L vill ha starka statliga kontrakt och exportstöd men inte ägarinflytande. Betonar öppna marknader och att privat ägande ger bättre innovationstakt. Stödjer europeiskt försvarssamarbete och gemensamma EU-upphandlingar som ett alternativ till nationellt statligt ägande.",
+  },
+  mp: {
+    nuclear: "Det mest anti-kärnkraft partiet. Mot all kärnkraft — vill stänga ner och absolut inte bygga nytt. Röstade emot regeringens satsning. Vill finansiera 100% förnybar energi istället.",
+    climate: "Klimat är hjärtefrågan. Vill ha de mest ambitiösa klimatmålen, stärkt biodiversitet, hållbar transport och snabb fossilfri omställning. Starkt stöd för koldioxidskatt och klimatstyrmedel.",
+    migration: "Det mest öppna partiet tillsammans med V. Starkt emot nuvarande restriktiva politik. Vill stärka barnkonventionen, ha humanitär ventil och behandla flyktingar mer humant. Kritiska till EU:s asylpakt.",
+    business: "Ser gröna investeringar som affärsmöjligheter men skeptiska till vinster i välfärden och avreglering. Vill ha grön omställning av näringsliv med statligt stöd. Inte renodlat marknadsliberala.",
+    urban: "Satsar på cykelinfrastruktur, kollektivtrafik och grönska i städer. Vill ha livliga, hållbara städer. Gröna partier har historiskt störst stöd i storstäder. Passar miljömedvetna stadsbor.",
+    crime: "Starkt fokus på förebyggande, social kontext och rehabilitering. Emot regeringens storskaliga straffskärpningar. Anser att forskning inte stödjer att hårdare straff minskar brottslighet och att kostnaderna (16–23 mdr/år) är orimliga utan evidens för effekt. Reserverade sig mot dubbla straff-propositionen.",
+    defense: "Accepterar Nato-medlemskapet men verkar inte aktivt för det och kräver kärnvapenfri lagstiftning. Diplomati och dialog som prioritet. Stödjer civilt försvar och krisberedskap inklusive cyberhot och klimatrisker. Skeptiska mot höga militära anslag på bekostnad av välfärd och klimatsatsningar.",
+    it: "Fokuserar på maktkoncentration hos techgiganterna och algoritmers påverkan på demokratin. Vill reglera AI hårdare och prioritera integritet och mänskliga rättigheter. Ser digital teknik som verktyg för hållbarhet men kräver demokratisk kontroll. Det mest kritiska partiet mot plattformsmakten.",
+    intel: "Mest kritiska mot utvidgad signalspaning och underrättelsetjänsternas befogenheter. Historiskt starkt emot FRA-lagen. Betonar fri kommunikation och personlig integritet. Vill ha strikta begränsningar och stark parlamentarisk tillsyn. Accepterar välreglerad kontraspionage men motsätter sig massövervakning.",
+    defind: "Reserverade sig i försvarsutskottet med krav på 'svensk rådighet över försvarsmaterielproduktionen' — de vill hindra att utländska ägare tar kontroll över strategisk försvarsindustri. Det är inte förstatligande, utan en nationell kontrollmekanism. MP är också kritiska till vapenexportens logik och vill skärpa exportreglerna kraftigt. Deras syn på industrin präglas mer av exportkritik än av ägandeformsfrågan.",
+  },
+};
+
+function PartiKompass() {
+  const [selectedTopic, setSelectedTopic] = useState("nuclear");
+  const [selectedParty, setSelectedParty] = useState(null);
+  const [view, setView] = useState("grid");
+
+  const topic = allTopics.find(t => t.id === selectedTopic);
+  const party = parties.find(p => p.id === selectedParty);
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#0f0f13", color: "#f0ede8", fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+      {/* Header */}
+      <div style={{ borderBottom: "1px solid #2a2a35", padding: "28px 24px 20px", background: "linear-gradient(180deg, #16161f 0%, #0f0f13 100%)" }}>
+        <div style={{ maxWidth: 940, margin: "0 auto" }}>
+          <div style={{ fontSize: 11, letterSpacing: "0.2em", color: "#666", textTransform: "uppercase", fontFamily: "sans-serif", marginBottom: 6 }}>Inför valet 2026</div>
+          <h1 style={{ margin: 0, fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal", letterSpacing: "-0.02em", lineHeight: 1.1 }}>
+            Riksdagspartiernas<br /><span style={{ color: "#9b8cff" }}>sakpolitiska ståndpunkter</span>
+          </h1>
+          <p style={{ margin: "10px 0 0", color: "#888", fontSize: 13, fontFamily: "sans-serif" }}>10 teman · 8 partier · Klicka för att läsa mer</p>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 940, margin: "0 auto", padding: "20px 16px" }}>
+        {/* Topic groups */}
+        {topicGroups.map(group => (
+          <div key={group.label} style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "#555", fontFamily: "sans-serif", marginBottom: 7 }}>{group.label}</div>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {group.topics.map(t => (
+                <button key={t.id} onClick={() => { setSelectedTopic(t.id); setSelectedParty(null); setView("grid"); }}
+                  style={{ padding: "7px 13px", borderRadius: 6, border: selectedTopic === t.id ? "1px solid #9b8cff" : "1px solid #2a2a35", background: selectedTopic === t.id ? "#1e1a3a" : "transparent", color: selectedTopic === t.id ? "#c4b8ff" : "#888", cursor: "pointer", fontSize: 12, fontFamily: "sans-serif", transition: "all 0.15s" }}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        <div style={{ borderTop: "1px solid #1e1e28", margin: "16px 0 22px" }} />
+
+        {/* Back */}
+        {view === "detail" && party && (
+          <button onClick={() => { setSelectedParty(null); setView("grid"); }}
+            style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", color: "#9b8cff", cursor: "pointer", fontSize: 13, fontFamily: "sans-serif", marginBottom: 20, padding: 0 }}>
+            ← Tillbaka till översikt
+          </button>
+        )}
+
+        {/* Detail view */}
+        {view === "detail" && party && (
+          <div>
+            <div style={{ background: "#16161f", borderRadius: 12, border: "1px solid #2a2a35", overflow: "hidden", marginBottom: 22 }}>
+              <div style={{ background: party.color, padding: "20px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+                <div style={{ width: 54, height: 54, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: "bold", color: party.textColor, fontFamily: "sans-serif", flexShrink: 0 }}>{party.abbr}</div>
+                <div>
+                  <div style={{ color: party.textColor, fontSize: 19 }}>{party.name}</div>
+                  <div style={{ color: party.textColor, opacity: 0.7, fontSize: 12, fontFamily: "sans-serif", marginTop: 2 }}>{party.bloc}</div>
+                </div>
+              </div>
+              <div style={{ padding: "20px 24px" }}>
+                <h3 style={{ margin: "0 0 10px", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#666", fontFamily: "sans-serif" }}>{topic.short}</h3>
+                <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
+                  {[1,2,3,4,5].map(i => (
+                    <div key={i} style={{ height: 8, flex: 1, borderRadius: 4, background: i <= ratings[party.id][selectedTopic] ? ratingColors[ratings[party.id][selectedTopic]-1] : "#2a2a35" }} />
+                  ))}
+                </div>
+                <div style={{ fontSize: 11, color: "#888", fontFamily: "sans-serif", marginBottom: 16 }}>{ratingLabels[selectedTopic][ratings[party.id][selectedTopic]-1]}</div>
+                <p style={{ margin: 0, lineHeight: 1.8, fontSize: 14, color: "#ccc" }}>{positions[party.id][selectedTopic]}</p>
+              </div>
+            </div>
+            <h3 style={{ margin: "0 0 12px", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#555", fontFamily: "sans-serif" }}>Alla teman — {party.name}</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))", gap: 9 }}>
+              {allTopics.filter(t => t.id !== selectedTopic).map(t => (
+                <button key={t.id} onClick={() => setSelectedTopic(t.id)}
+                  style={{ background: "#16161f", border: "1px solid #2a2a35", borderRadius: 10, padding: "13px", textAlign: "left", cursor: "pointer" }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = "#9b8cff"}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = "#2a2a35"}>
+                  <div style={{ fontSize: 11, color: "#aaa", fontFamily: "sans-serif", marginBottom: 6 }}>{t.label}</div>
+                  <div style={{ display: "flex", gap: 3 }}>
+                    {[1,2,3,4,5].map(i => (
+                      <div key={i} style={{ height: 5, flex: 1, borderRadius: 3, background: i <= ratings[party.id][t.id] ? ratingColors[ratings[party.id][t.id]-1] : "#2a2a35" }} />
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 10, color: "#555", marginTop: 4, fontFamily: "sans-serif" }}>{ratingLabels[t.id][ratings[party.id][t.id]-1]}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Grid view */}
+        {view === "grid" && (
+          <>
+            <p style={{ margin: "0 0 14px", fontSize: 12, color: "#666", fontFamily: "sans-serif" }}>Klicka på ett parti för att läsa hela ståndpunkten</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(196px, 1fr))", gap: 10 }}>
+              {parties.map(p => {
+                const r = ratings[p.id][selectedTopic];
+                const color = ratingColors[r-1];
+                return (
+                  <button key={p.id} onClick={() => { setSelectedParty(p.id); setView("detail"); }}
+                    style={{ background: "#16161f", border: "1px solid #2a2a35", borderRadius: 12, padding: "17px", textAlign: "left", cursor: "pointer", transition: "all 0.15s", position: "relative", overflow: "hidden" }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = p.color; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = "#2a2a35"; e.currentTarget.style.transform = "translateY(0)"; }}>
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: p.color }} />
+                    <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 36, height: 36, borderRadius: "50%", background: p.color, color: p.textColor, fontSize: 11, fontWeight: "bold", fontFamily: "sans-serif", marginBottom: 9 }}>{p.abbr}</div>
+                    <div style={{ fontSize: 12, color: "#ccc", marginBottom: 2, fontFamily: "sans-serif" }}>{p.name}</div>
+                    <div style={{ fontSize: 10, color: "#555", marginBottom: 11, fontFamily: "sans-serif" }}>{p.bloc}</div>
+                    <div style={{ display: "flex", gap: 3, marginBottom: 5 }}>
+                      {[1,2,3,4,5].map(i => (
+                        <div key={i} style={{ height: 5, flex: 1, borderRadius: 3, background: i <= r ? color : "#2a2a35" }} />
+                      ))}
+                    </div>
+                    <div style={{ fontSize: 10, color, fontFamily: "sans-serif", fontWeight: "600", marginBottom: 9 }}>{ratingLabels[selectedTopic][r-1]}</div>
+                    <div style={{ fontSize: 11, color: "#666", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden", fontFamily: "sans-serif" }}>{positions[p.id][selectedTopic]}</div>
+                    <div style={{ marginTop: 9, fontSize: 10, color: "#9b8cff", fontFamily: "sans-serif" }}>Läs mer →</div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Legend */}
+            <div style={{ marginTop: 26, padding: "15px", background: "#16161f", borderRadius: 10, border: "1px solid #2a2a35" }}>
+              <div style={{ fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", color: "#555", fontFamily: "sans-serif", marginBottom: 9 }}>Skala — {topic.short}</div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                {ratingLabels[selectedTopic].map((label, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: 2, background: ratingColors[i], flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, color: "#777", fontFamily: "sans-serif" }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bar comparison */}
+            <div style={{ marginTop: 20 }}>
+              <h3 style={{ margin: "0 0 13px", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#555", fontFamily: "sans-serif" }}>Snabbvy — alla partier</h3>
+              {parties.map(p => {
+                const r = ratings[p.id][selectedTopic];
+                return (
+                  <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 7, cursor: "pointer" }} onClick={() => { setSelectedParty(p.id); setView("detail"); }}>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: p.color, color: p.textColor, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: "bold", fontFamily: "sans-serif", flexShrink: 0 }}>{p.abbr}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", gap: 2 }}>
+                        {[1,2,3,4,5].map(i => (
+                          <div key={i} style={{ height: 7, flex: 1, borderRadius: 2, background: i <= r ? ratingColors[r-1] : "#1e1e28" }} />
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 10, color: "#555", fontFamily: "sans-serif", width: 130, textAlign: "right" }}>{ratingLabels[selectedTopic][r-1]}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </div>
+
+      <div style={{ padding: "18px 24px", borderTop: "1px solid #1a1a23", marginTop: 28, textAlign: "center" }}>
+        <p style={{ margin: 0, fontSize: 10, color: "#444", fontFamily: "sans-serif" }}>
+          Sammanställt utifrån partiernas officiella ståndpunkter, riksdagsmotioner och uttalanden 2025–2026. Betygen är redaktionella sammanfattningar — klicka på varje parti för fullständig motivering.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<PartiKompass />);
+  </script>
+</body>
+</html>
