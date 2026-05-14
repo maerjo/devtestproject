@@ -1,32 +1,45 @@
-# devtestproject
+# devtestportfolio
 
-A site about testing and other dev projects and a little about me.
+A personal portfolio site collecting projects, notes, and experiments. Built with plain HTML/CSS and tested with Robot Framework + Playwright.
 
 **Live site:** <https://maerjo.github.io/devtestproject/>
+
+## Projects
+
+- **Partikompass 2026** – An interactive guide to Swedish political parties' positions on 10 policy areas ahead of the 2026 election.
+- **Robot Framework + Browser examples** – DOM checks, navigation, and accessibility smoke tests with CI via GitHub Actions.
 
 ## Quick start
 
 ```bash
-python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-rfbrowser init
+rfbrowser install chromium
 python -m http.server 8000
-# open http://localhost:8000/index.html
+# open http://localhost:8000
 ```
 
----
+## Running tests
 
-## PowerShell (pwsh) Quick Start
+```bash
+source .venv/bin/activate
+python -m http.server 8000 &
+robot -d reports tests/
+```
 
-If you are using PowerShell instead of bash, use the following commands:
+Test reports are written to `reports/` (gitignored).
+
+## PowerShell (pwsh)
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-rfbrowser init
+rfbrowser install chromium
 python -m http.server 8000
-# open http://localhost:8000/index.html
+# open http://localhost:8000
 ```
 
-Note: The main difference is the virtual environment activation command.
+## CI
+
+GitHub Actions runs the Robot Framework test suite on every push and pull request to `main`. Reports are uploaded as artifacts after each run.
