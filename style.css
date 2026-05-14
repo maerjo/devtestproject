@@ -1,13 +1,210 @@
-:root { --space: 1rem; --max: 900px; }
-* { box-sizing: border-box; }
-body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; line-height: 1.5; margin: 0; color: #111; }
-header, main, footer { padding: var(--space); }
-header { border-bottom: 1px solid #e5e7eb; }
-nav a { margin-right: .75rem; text-decoration: none; }
-nav a[aria-current="page"] { font-weight: 600; text-decoration: underline; }
-main { max-width: var(--max); margin: 0 auto; }
-button { cursor: pointer; }
-form { display: flex; gap: .5rem; margin-block: .5rem; }
-input { padding: .5rem; flex: 1; }
-ul { padding-left: 1.2rem; }
-footer { border-top: 1px solid #e5e7eb; }
+/* ── Design tokens ── */
+:root {
+  --bg:         #0f0f13;
+  --bg-card:    #16161f;
+  --border:     #2a2a35;
+  --text:       #f0ede8;
+  --text-muted: #888;
+  --text-dim:   #555;
+  --accent:     #9b8cff;
+  --accent-light: #c4b8ff;
+  --max:        900px;
+  --space:      1rem;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Base ── */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+header {
+  background: linear-gradient(180deg, #16161f 0%, #0f0f13 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 28px var(--space) 20px;
+}
+
+.header-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+}
+
+header h1 {
+  font-size: clamp(22px, 4vw, 36px);
+  font-weight: normal;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+nav a {
+  font-family: sans-serif;
+  font-size: 13px;
+  text-decoration: none;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  transition: all 0.15s;
+}
+
+nav a:hover {
+  color: var(--accent-light);
+  border-color: var(--accent);
+  background: #1e1a3a;
+}
+
+nav a[aria-current="page"] {
+  color: var(--accent-light);
+  border-color: var(--accent);
+  background: #1e1a3a;
+}
+
+/* ── Main ── */
+main {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 32px var(--space);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ── Sections ── */
+section h2 {
+  font-size: 11px;
+  font-family: sans-serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+
+section p {
+  color: #ccc;
+  font-size: 15px;
+  margin-bottom: 14px;
+}
+
+/* ── Toggle button ── */
+button {
+  cursor: pointer;
+  font-family: sans-serif;
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  transition: all 0.15s;
+}
+
+button:hover {
+  color: var(--accent-light);
+  border-color: var(--accent);
+  background: #1e1a3a;
+}
+
+#bio {
+  margin-top: 14px;
+  padding: 16px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: #ccc;
+  font-size: 14px;
+}
+
+/* ── Project list ── */
+.project-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.project-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent);
+}
+
+.project-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.project-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.project-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.project-title {
+  font-family: sans-serif;
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.project-desc {
+  font-family: sans-serif;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.project-warning {
+  font-family: sans-serif;
+  font-size: 12px;
+  color: #f97316;
+  line-height: 1.5;
+}
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 20px var(--space);
+  text-align: center;
+}
+
+footer small {
+  font-family: sans-serif;
+  font-size: 11px;
+  color: var(--text-dim);
+}

@@ -8,12 +8,14 @@
 </head>
 <body>
   <header role="banner">
-    <h1>devtestportfolio</h1>
-    <nav aria-label="Main" role="navigation">
-      <a href="/index.html" aria-current="page">Home</a>
-      <a href="/projects.html">Projects</a>
-      <a href="mailto:matsej@gmail.com" id="contact-link">Contact</a>
-    </nav>
+    <div class="header-inner">
+      <h1>devtestportfolio</h1>
+      <nav aria-label="Main" role="navigation">
+        <a href="/index.html" aria-current="page">Home</a>
+        <a href="/projects.html">Projects</a>
+        <a href="mailto:matsej@gmail.com" id="contact-link">Contact</a>
+      </nav>
+    </div>
   </header>
 
   <main role="main">
@@ -28,11 +30,16 @@
 
     <section aria-labelledby="projects-heading">
       <h2 id="projects-heading">Projects</h2>
-      <ul>
+      <ul class="project-list">
         <li>
-          <a href="partikompassen.html">🗳️ Partikompass 2026</a>
-          <p>An interactive guide to Swedish political parties' positions on 10 policy areas ahead of the 2026 election.</p>
-          <p>CAUTION! Vibe coded mostly from the bathtub, no code was properly tested in this development!</p>
+          <a href="partikompassen.html" class="project-card">
+            <span class="project-icon">🗳️</span>
+            <div>
+              <span class="project-title">Partikompass 2026</span>
+              <span class="project-desc">An interactive guide to Swedish political parties' positions on 10 policy areas ahead of the 2026 election.</span>
+              <span class="project-warning">⚠️ CAUTION! Vibe coded mostly from the bathtub, no code was properly tested in this development!</span>
+            </div>
+          </a>
         </li>
       </ul>
     </section>
