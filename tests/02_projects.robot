@@ -20,7 +20,7 @@ Projects Page Has Correct Title And Nav
 
 Projects Page Shows Partikompass Card
     Get Element Count    .project-card    >    0
-    Get Text    .project-title    ==    Partikompass 2026
+    Get Text    a.project-card .project-title    ==    Partikompass 2026
     ${href}=    Get Attribute    a.project-card    href
     Should Contain    ${href}    partikompassen.html
 
