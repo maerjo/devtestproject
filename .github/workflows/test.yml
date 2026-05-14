@@ -22,11 +22,12 @@ jobs:
         run: |
           python -m pip install -U pip
           pip install -r requirements.txt
-          rfbrowser init
+          rfbrowser install chromium
       - name: Start static server
         run: |
           python -m http.server 8000 &
           echo $! > server.pid
+          until curl -s http://localhost:8000 > /dev/null; do sleep 1; done
       - name: Run Robot
         run: robot -d reports tests
       - name: Upload Robot reports
