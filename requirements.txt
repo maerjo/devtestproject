@@ -1,2 +1,2 @@
 robotframework==7.3.2
-robotframework-browser==19.8.0
+robotframework-browser[bb]==19.15.0

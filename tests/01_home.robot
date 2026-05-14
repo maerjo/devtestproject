@@ -19,7 +19,10 @@ Home Renders Title And Nav
     Get Text    h1    ==    devtestportfolio
     Get Attribute    a[aria-current="page"]    aria-current    ==    page
 
-Add Item To Quick List
-    Fill Text    id=item-input    Test item
-    Click    id=add-btn
-    Get Text    xpath=//*[@id="quick-list"]/li/    ==    Test item
+Toggle Bio Expands Hidden Content
+    ${expanded}=    Get Attribute    [id="toggle-bio"]    aria-expanded
+    Should Be Equal    ${expanded}    false
+    Click    [id="toggle-bio"]
+    ${expanded}=    Get Attribute    [id="toggle-bio"]    aria-expanded
+    Should Be Equal    ${expanded}    true
+    Wait For Elements State    [id="bio"]    visible

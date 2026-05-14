@@ -58,6 +58,7 @@ env.bak/
 venv.bak/
 
 # Robot Framework output files
+reports/
 results/
 output.xml
 log.html

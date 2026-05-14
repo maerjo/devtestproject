@@ -15,12 +15,13 @@ Open Browser To Site
 *** Test Cases ***
 Has Core Landmarks And Names
     # Banner, navigation with label, main, and contentinfo should exist
-    Get Count    [role="banner"]    >    0
-    Get Count    [role="navigation"][aria-label]    >    0
-    Get Count    [role="main"]    >    0
-    Get Count    [role="contentinfo"]    >    0
+    Get Element Count    [role="banner"]    >    0
+    Get Element Count    [role="navigation"][aria-label]    >    0
+    Get Element Count    [role="main"]    >    0
+    Get Element Count    [role="contentinfo"]    >    0
 
 Interactive Controls Are Named
     # Button must have accessible name
-    Get Attribute    #toggle-bio    aria-expanded    !=    ${EMPTY}
-    Get Text    #toggle-bio    !=    ${EMPTY}
+    ${expanded}=    Get Attribute    [id="toggle-bio"]    aria-expanded
+    Should Not Be Empty    ${expanded}
+    Get Text    [id="toggle-bio"]    !=    ${EMPTY}
