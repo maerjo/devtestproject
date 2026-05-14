@@ -196,6 +196,22 @@ button:hover {
   line-height: 1.5;
 }
 
+.project-bullets {
+  list-style: disc;
+  padding-left: 1.2rem;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.project-bullets li {
+  font-family: sans-serif;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 /* ── Footer ── */
 footer {
   border-top: 1px solid var(--border);
